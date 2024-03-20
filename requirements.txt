@@ -2,3 +2,4 @@ streamlit
 torch
 google-ai-generativelanguage==0.4.0
 google-generativeai==0.3.0
+pandas
