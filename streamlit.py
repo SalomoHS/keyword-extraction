@@ -123,9 +123,17 @@ labels = [
     'INFORMATION MEDIA', 'BUSINESS SERVICES'
 ]
 
-subject_list = []
-commodity_list = []
-state = 0
+if 'subject_list' not in st.session_state:
+    st.session_state['subject_list'] = []
+if 'commodity_list' not in st.session_state:
+    st.session_state['commodity_list'] = []
+if 'state' not in st.session_state:
+    st.session_state['state'] = 0
+if 'progress' not in st.session_state:
+    st.session_state['progress'] = st.progress(0)
+# subject_list = []
+# commodity_list = []
+# state = 0
 uploaded_file = st.file_uploader("Upload CSV file", type=['csv'])
 #st.write('The current movie title is', title)
     
@@ -135,12 +143,12 @@ if uploaded_file is not None:
     # Display the contents of the CSV file
     st.write('**CSV file contents:**')
     st.write(df)
-    progress_bar = st.progress(0)
+    # progress_bar = 
     
     while(1):
         try:
-            for i,row in df.iloc[state:].iterrows():
-                progress_bar.progress((state + 1) / len(df), text = f"{state+1}/{len(df)}")
+            for i,row in df.iloc[st.session_state['state']:].iterrows():
+                st.session_state['progress'].progress((st.session_state['state'] + 1) / len(df), text = f"{st.session_state['state']+1}/{len(df)}")
                 text = row['abs_sum_en']
                 get_subjects = [f'News: {text}',"Mention the name of the corporate company mentioned in the news ?", 'You can pick it more than one !','Please provide result using comma as the delimiter.']
                 get_commodity_desc = [f'News: {text}',f'Define news based on this list: {labels}, and please provide result using comma as the delimiter !','You can define maximum 3 !']
@@ -150,19 +158,19 @@ if uploaded_file is not None:
                     commodity  = model.generate_content(get_commodity_desc).text
                 except:
                     continue
-                subject_list.append(subject)
-                commodity_list.append(commodity)
-                state+=1
+                st.session_state['subject_list'].append(subject)
+                st.session_state['commodity_list'].append(commodity)
+                st.session_state['state']+=1
 
-            if len(commodity_list) == len(df):
+            if len(st.session_state['commodity_list']) == len(df):
                 break
         except:
             continue
 
-    st.write(subject_list)
-    st.write(commodity_list)
-    df['subject_tags'] = subject_list
-    df['commodity_tags'] = commodity_list
+    st.write(st.session_state['subject_list'])
+    st.write(st.session_state['commodity_list'])
+    df['subject_tags'] = st.session_state['subject_list']
+    df['commodity_tags'] = st.session_state['commodity_list']
     df.fillna('-', inplace=True)
     df['subject_tags'] = [i.split(',') for i in df['subject_tags']]
     df['commodity_tags'] = [i.split(',') for i in df['commodity_tags']]
@@ -178,3 +186,4 @@ if uploaded_file is not None:
     except:
         save_path = os.path.join(os.getcwd(),'/\\kp1eucapp01\MagangCSA\Data\Web Scraping\Gnews\keyword extraction',file_name)
         final_df.to_csv(save_path, index=False)
+        
