@@ -167,13 +167,14 @@ if uploaded_file is not None:
     df['subject_tags'] = [i.split(',') for i in df['subject_tags']]
     df['commodity_tags'] = [i.split(',') for i in df['commodity_tags']]
     final_df = df.explode(['commodity_tags'])
+    final_df['commodity_tags'] = [i.strip() for i in final_df['commodity_tags']]
     final_df['commodity_tags'] = final_df['commodity_tags'].apply(labelling)
+    
     st.write(final_df)
     file_name = f"{datetime.now().strftime('%Y%m%d')}_news.csv"
     try:
-        save_path = os.path.join('C:\\Users\\isalo\\Documents',file_name)
+        save_path = os.path.join(os.getcwd(),'C:\\Users\\isalo\\Documents',file_name)
         final_df.to_csv(save_path, index=False)
     except:
-        save_path = os.path.join('/\\kp1eucapp01\MagangCSA\Data\Web Scraping\Gnews\keyword extraction',file_name)
+        save_path = os.path.join(os.getcwd(),'/\\kp1eucapp01\MagangCSA\Data\Web Scraping\Gnews\keyword extraction',file_name)
         final_df.to_csv(save_path, index=False)
-        
