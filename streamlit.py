@@ -25,11 +25,11 @@ def labelling(label):
         return'MINYAK NABATI / HEWANI'
     elif label == 'FOOD AND BEVERAGE':
         return 'MAKANAN DAN MINUMAN'
-    elif label == 'CONSUMER NEEDS, EQUIPMENT AND HOUSEHOLD NEEDS (NEEDS OUTSIDE OF CLOTHING)':
+    elif (label == 'CONSUMER NEEDS') or (label == 'EQUIPMENT AND HOUSEHOLD NEEDS (NEEDS OUTSIDE OF CLOTHING)'):
         return 'KEBUTUHAN KONSUMEN, PERLENGKAPAN DAN KEBUTUHAN RT (KEBUTUHAN DI LUAR SANDANG)'
     elif label == 'PACKAGING':
         return 'PACKAGING'
-    elif label == 'MACHINERY, HEAVY EQUIPMENT & OTHER INDUSTRIAL EQUIPMENT':
+    elif (label == 'MACHINERY') or (label == 'HEAVY EQUIPMENT & OTHER INDUSTRIAL EQUIPMENT'):
         return 'PERMESINAN, ALAT BERAT & PERALATAN INDUSTRI LAINNYA'
     elif label == 'PROPERTY AND CONSTRUCTION':
         return 'PROPERTI DAN KONSTRUKSI'
@@ -53,7 +53,7 @@ def labelling(label):
         return 'PERTAMBANGAN MIGAS'
     elif label == 'CIGARETTES AND TOBACCO':
         return 'ROKOK DAN TEMBAKAU'
-    elif label == 'DISTRIBUTION, RETAILERS AND DEPARTMENT STORES':
+    elif (label == 'DISTRIBUTION') or (label == 'RETAILERS AND DEPARTMENT STORES'):
         return 'DISTRIBUSI, RETAILER DAN TOSERBA'
     elif label == 'TOURISM':
         return 'PARIWISATA'
@@ -61,7 +61,7 @@ def labelling(label):
         return 'INFRASTRUKTUR SARANA ANGKUTAN'
     elif label == 'STAPLE FOODS':
         return 'MAKANAN POKOK'
-    elif label == 'LIVESTOCK, FISHERIES AND PRODUCTION FACILITIES':
+    elif (label == 'LIVESTOCK') or (label == 'FISHERIES AND PRODUCTION FACILITIES'):
         return 'PETERNAKAN, PERIKANAN DAN SARANA PRODUKSI'
     elif label == 'INFORMATION TECHNOLOGY':
         return 'TEKNOLOGI INFORMASI'
@@ -77,7 +77,7 @@ def labelling(label):
         return 'MEDIA INFORMASI'
     elif label == 'BUSINESS SERVICES':
         return 'JASA USAHA'
-
+    
 genai.configure(api_key='AIzaSyBM3MFzxbo_6ptt_o3ss8YchNtjgI7DSRQ')
 st.write("Hello world")
 
@@ -134,7 +134,7 @@ if 'progress' not in st.session_state:
 # subject_list = []
 # commodity_list = []
 # state = 0
-uploaded_file = st.file_uploader("Upload CSV file", type=['csv'])
+uploaded_file = st.file_uploader("Upload CSV/Excel file", type=['csv','xlsx'])
 #st.write('The current movie title is', title)
     
 if uploaded_file is not None:
@@ -169,21 +169,32 @@ if uploaded_file is not None:
 
     st.write(st.session_state['subject_list'])
     st.write(st.session_state['commodity_list'])
-    df['subject_tags'] = st.session_state['subject_list']
-    df['commodity_tags'] = st.session_state['commodity_list']
-    df.fillna('-', inplace=True)
-    df['subject_tags'] = [i.split(',') for i in df['subject_tags']]
-    df['commodity_tags'] = [i.split(',') for i in df['commodity_tags']]
-    final_df = df.explode(['commodity_tags'])
-    final_df['commodity_tags'] = [i.strip() for i in final_df['commodity_tags']]
-    final_df['commodity_tags'] = final_df['commodity_tags'].apply(labelling)
+    df['CUST_NAME'] = st.session_state['subject_list']
+    df['COMMODITY_DESC'] = st.session_state['commodity_list']
     
+    df.fillna('-', inplace=True)
+    df['CUST_NAME'] = [i.split(',') for i in df['CUST_NAME']]
+    df['COMMODITY_DESC'] = [i.split(',') for i in df['COMMODITY_DESC']]
+    final_df = df.explode(['COMMODITY_DESC'])
+    final_df['COMMODITY_DESC'] = [i.strip() for i in final_df['COMMODITY_DESC']]
+    final_df['COMMODITY_DESC'] = final_df['COMMODITY_DESC'].apply(labelling)
+    final_df = final_df.explode(['CUST_NAME']).reset_index(drop=True)
     st.write(final_df)
+    
     file_name = f"{datetime.now().strftime('%Y%m%d')}_news.csv"
-    try:
-        save_path = os.path.join(os.getcwd(),'C:\\Users\\isalo\\Documents',file_name)
-        final_df.to_csv(save_path, index=False)
-    except:
-        save_path = os.path.join(os.getcwd(),'/\\kp1eucapp01\MagangCSA\Data\Web Scraping\Gnews\keyword extraction',file_name)
-        final_df.to_csv(save_path, index=False)
+    excel_file = final_df.to_excel().encode('utf-8')
+    
+    st.download_button(
+        label="Download data",
+        data=excel_file,
+        file_name=file_name,
+        mime='text/csv',
+    )
+    
+    # try:
+    #     save_path = os.path.join(os.getcwd(),'C:\\Users\\isalo\\Documents',file_name)
+    #     final_df.to_csv(save_path, index=False)
+    # except:
+    #     save_path = os.path.join(os.getcwd(),'/\\kp1eucapp01\MagangCSA\Data\Web Scraping\Gnews\keyword extraction',file_name)
+    #     final_df.to_csv(save_path, index=False)
         
