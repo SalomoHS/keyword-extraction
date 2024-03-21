@@ -134,12 +134,12 @@ if 'progress' not in st.session_state:
 # subject_list = []
 # commodity_list = []
 # state = 0
-uploaded_file = st.file_uploader("Upload CSV/Excel file", type=['csv','xlsx'])
+uploaded_file = st.file_uploader("Upload Excel file")
 #st.write('The current movie title is', title)
     
 if uploaded_file is not None:
     # Read the CSV file
-    df = pd.read_csv(uploaded_file)
+    df = pd.read_excel(uploaded_file)
     # Display the contents of the CSV file
     st.write('**CSV file contents:**')
     st.write(df)
