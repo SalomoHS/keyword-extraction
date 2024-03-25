@@ -123,6 +123,8 @@ labels = [
     'INFORMATION MEDIA', 'BUSINESS SERVICES'
 ]
 
+if 'summary_list' not in st.session_state:
+    st.session_state['summary_list'] = []
 if 'subject_list' not in st.session_state:
     st.session_state['subject_list'] = []
 if 'commodity_list' not in st.session_state:
@@ -131,27 +133,36 @@ if 'state' not in st.session_state:
     st.session_state['state'] = 0
 if 'progress' not in st.session_state:
     st.session_state['progress'] = st.progress(0)
-# subject_list = []
-# commodity_list = []
-# state = 0
+
 uploaded_file = st.file_uploader("Upload Excel file")
-#st.write('The current movie title is', title)
+
     
 if uploaded_file is not None:
     # Read the CSV file
+    df = pd.DataFrame()
+    # try:
     df = pd.read_excel(uploaded_file)
-    # Display the contents of the CSV file
-    st.write('**CSV file contents:**')
+    # except:
+    #     df = pd.read_csv(uploaded_file)
+
+    st.write('**File contents:**')
     st.write(df)
-    # progress_bar = 
     
     while(1):
         try:
             for i,row in df.iloc[st.session_state['state']:].iterrows():
                 st.session_state['progress'].progress((st.session_state['state'] + 1) / len(df), text = f"{st.session_state['state']+1}/{len(df)}")
-                text = row['abs_sum_en']
-                get_subjects = [f'News: {text}',"Mention the name of the corporate company mentioned in the news ?", 'You can pick it more than one !','Please provide result using comma as the delimiter.']
-                get_commodity_desc = [f'News: {text}',f'Define news based on this list: {labels}, and please provide result using comma as the delimiter !','You can define maximum 3 !']
+                text = row['summarized_en']
+                summarize =  [f'News: {text}','Generate a summarization of the given sentences with the maximum number of sentences range from 3 to 4, and the range of word count in each sentences is 14 to 30.','Provide result looks like normal sentences.']
+                abs_summarizer = ''
+                try:
+                    abs_summarizer = model.generate_content(summarize).text
+                except:
+                    continue
+                st.session_state['summary_list'].append(abs_summarizer)
+                
+                get_subjects = [f'News: {abs_summarizer}',"Mention the name of the corporate company mentioned in the news ?", 'You can pick it more than one !','Please provide result using comma as the delimiter.']
+                get_commodity_desc = [f'News: {abs_summarizer}',f'Define news based on this list: {labels}, and please provide result using comma as the delimiter !','You can define maximum 3 !']
                 
                 try:
                     subject  = model.generate_content(get_subjects).text
@@ -167,10 +178,12 @@ if uploaded_file is not None:
         except:
             continue
 
-    st.write(st.session_state['subject_list'])
-    st.write(st.session_state['commodity_list'])
+    # st.write(st.session_state['subject_list'])
+    # st.write(st.session_state['commodity_list'])
+    df['abs_sum_en'] = st.session_state['summary_list'] 
     df['CUST_NAME'] = st.session_state['subject_list']
     df['COMMODITY_DESC'] = st.session_state['commodity_list']
+    
     
     df.fillna('-', inplace=True)
     df['CUST_NAME'] = [i.split(',') for i in df['CUST_NAME']]
@@ -179,22 +192,16 @@ if uploaded_file is not None:
     final_df['COMMODITY_DESC'] = [i.strip() for i in final_df['COMMODITY_DESC']]
     final_df['COMMODITY_DESC'] = final_df['COMMODITY_DESC'].apply(labelling)
     final_df = final_df.explode(['CUST_NAME']).reset_index(drop=True)
+    final_df = final_df.drop_duplicates()
     st.write(final_df)
-    
+    # final_df
     file_name = f"{datetime.now().strftime('%Y%m%d')}_news.csv"
-    excel_file = final_df.to_excel().encode('utf-8')
+    excel_file = final_df.to_csv().encode('utf-8')
+    # with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+    #     excel_file = final_df.to_excel(writer)
     
     st.download_button(
         label="Download data",
         data=excel_file,
-        file_name=file_name,
-        mime='text/csv',
+        file_name=file_name
     )
-    
-    # try:
-    #     save_path = os.path.join(os.getcwd(),'C:\\Users\\isalo\\Documents',file_name)
-    #     final_df.to_csv(save_path, index=False)
-    # except:
-    #     save_path = os.path.join(os.getcwd(),'/\\kp1eucapp01\MagangCSA\Data\Web Scraping\Gnews\keyword extraction',file_name)
-    #     final_df.to_csv(save_path, index=False)
-        
