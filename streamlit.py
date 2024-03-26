@@ -152,7 +152,7 @@ if uploaded_file is not None:
         try:
             for i,row in df.iloc[st.session_state['state']:].iterrows():
                 st.session_state['progress'].progress((st.session_state['state'] + 1) / len(df), text = f"{st.session_state['state']+1}/{len(df)}")
-                text = row['summarized_en']
+                text = row['ext_summarized_en']
                 summarize =  [f'News: {text}','Generate a summarization of the given sentences with the maximum number of sentences range from 3 to 4, and the range of word count in each sentences is 14 to 30.','Provide result looks like normal sentences.']
                 abs_summarizer = ''
                 try:
