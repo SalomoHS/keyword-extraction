@@ -97,7 +97,7 @@ safety_settings = [{'category': 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
                     }
                 ]
 
-model = genai.GenerativeModel(model_name="gemini-1.0-pro",generation_config={'temperature':0.1},safety_settings=safety_settings)
+model = genai.GenerativeModel(model_name="gemini-pro",generation_config={'temperature':0},safety_settings=safety_settings)
 
 
 labels = [
@@ -123,16 +123,18 @@ labels = [
     'INFORMATION MEDIA', 'BUSINESS SERVICES'
 ]
 
-if 'summary_list' not in st.session_state:
-    st.session_state['summary_list'] = []
+if 'stock_name_list' not in st.session_state:
+    st.session_state['stock_name_list'] = []
 if 'subject_list' not in st.session_state:
     st.session_state['subject_list'] = []
 if 'commodity_list' not in st.session_state:
     st.session_state['commodity_list'] = []
 if 'state' not in st.session_state:
     st.session_state['state'] = 0
-if 'progress' not in st.session_state:
-    st.session_state['progress'] = st.progress(0)
+if 'get_subject_progress' not in st.session_state:
+    st.session_state['get_subject_progress'] = st.progress(0)
+# if 'get_stock_progress' not in st.session_state:
+#     st.session_state['get_stock_progress'] = st.progress(0)
 
 uploaded_file = st.file_uploader("Upload Excel file")
 
@@ -151,24 +153,32 @@ if uploaded_file is not None:
     while(1):
         try:
             for i,row in df.iloc[st.session_state['state']:].iterrows():
-                st.session_state['progress'].progress((st.session_state['state'] + 1) / len(df), text = f"{st.session_state['state']+1}/{len(df)}")
-                text = row['ext_summarized_en']
-                summarize =  [f'News: {text}','Generate a summarization of the given sentences with the maximum number of sentences range from 3 to 4, and the range of word count in each sentences is 14 to 30.','Provide result looks like normal sentences.']
-                abs_summarizer = ''
+                st.session_state['get_subject_progress'].progress((st.session_state['state'] + 1) / len(df), text = f"{st.session_state['state']+1}/{len(df)}")
+                text = row['content_en']
+                
+                get_subjects = [f'News: {text}',"Mention the name of the corporate company mentioned in the news ?", 
+                                'You can pick it more than one !',
+                                'Please provide result using comma as the delimiter.']
+                
+                get_commodity_desc = [f'News: {text}',
+                                      f'Define news based on this list: {labels}, and please provide result using comma as the delimiter !',
+                                      'You can define maximum 3 !']
+                subject = ''
+                commodity = ''
+                stock_name = ''
                 try:
-                    abs_summarizer = model.generate_content(summarize).text
+                    subject  = model.generate_content(get_subjects).text.strip()
+                    commodity  = model.generate_content(get_commodity_desc).text.strip()
+                    
+                    get_stock_name = ['Your task is to classify company name to existing stock name based on Indonesia stock exchange !', 
+                                      f'Company name: {subject}.',
+                                      'Please generate result only like <stock name1>, <stock name2>, <...>.',
+                                      "If the company name not listed on Indonesia stock exchange, then don't write on the result."]
+                    stock_name = model.generate_content(get_stock_name).text.strip()
                 except:
                     continue
-                st.session_state['summary_list'].append(abs_summarizer)
                 
-                get_subjects = [f'News: {abs_summarizer}',"Mention the name of the corporate company mentioned in the news ?", 'You can pick it more than one !','Please provide result using comma as the delimiter.']
-                get_commodity_desc = [f'News: {abs_summarizer}',f'Define news based on this list: {labels}, and please provide result using comma as the delimiter !','You can define maximum 3 !']
-                
-                try:
-                    subject  = model.generate_content(get_subjects).text
-                    commodity  = model.generate_content(get_commodity_desc).text
-                except:
-                    continue
+                st.session_state['stock_name_list'].append(stock_name)
                 st.session_state['subject_list'].append(subject)
                 st.session_state['commodity_list'].append(commodity)
                 st.session_state['state']+=1
@@ -180,23 +190,24 @@ if uploaded_file is not None:
 
     # st.write(st.session_state['subject_list'])
     # st.write(st.session_state['commodity_list'])
-    df['abs_sum_en'] = st.session_state['summary_list'] 
-    df['CUST_NAME'] = st.session_state['subject_list']
+    # df['abs_sum_en'] = st.session_state['summary_list'] 
+    df['stock_name'] = st.session_state['stock_name_list']
+    df['subject_name'] = st.session_state['subject_list']
     df['COMMODITY_DESC'] = st.session_state['commodity_list']
     
     
-    df.fillna('-', inplace=True)
-    df['CUST_NAME'] = [i.split(',') for i in df['CUST_NAME']]
-    df['COMMODITY_DESC'] = [i.split(',') for i in df['COMMODITY_DESC']]
-    final_df = df.explode(['COMMODITY_DESC'])
-    final_df['COMMODITY_DESC'] = [i.strip() for i in final_df['COMMODITY_DESC']]
-    final_df['COMMODITY_DESC'] = final_df['COMMODITY_DESC'].apply(labelling)
-    final_df = final_df.explode(['CUST_NAME']).reset_index(drop=True)
-    final_df = final_df.drop_duplicates()
-    st.write(final_df)
+    # df.fillna('-', inplace=True)
+    # df['subject_name'] = [i.split(',') for i in df['subject_name']]
+    # df['COMMODITY_DESC'] = [i.split(',') for i in df['COMMODITY_DESC']]
+    # final_df = df.explode(['COMMODITY_DESC'])
+    # final_df['COMMODITY_DESC'] = [i.strip() for i in final_df['COMMODITY_DESC']]
+    # final_df['COMMODITY_DESC'] = final_df['COMMODITY_DESC'].apply(labelling)
+    # final_df = final_df.explode(['subject_name']).reset_index(drop=True)
+    # final_df = final_df.drop_duplicates()
+    st.write(df)
     # final_df
     file_name = f"{datetime.now().strftime('%Y%m%d')}_news.csv"
-    excel_file = final_df.to_csv().encode('utf-8')
+    excel_file = df.to_csv().encode('utf-8')
     # with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
     #     excel_file = final_df.to_excel(writer)
     
