@@ -162,10 +162,10 @@ if uploaded_file is not None:
                                 'Output: BMW, BMW Indonesia',
                                 f'input:\nBerita: {sample_text2}\nSebutkan nama perusahaan apa saja yang tercantum di dalam berita !\nJika terdapat nama perusahaan "Mandiri", maka tambahkan kata "Bank" di awal !\nSertakan hasil hanya dengan 1 baris dengan tanda koma sebagai pemisah !',
                                 'Output: PT Bank Mandiri Persero Tbk, PT Bank Central Asia Tbk, PT Bank Rakyat Indonesia Persero Tbk, PT Bank Negara Indonesia Persero Tbk',
-                                f'input:\nBerita: {sample_text3}\nSebutkan nama perusahaan apa saja yang tercantum di dalam berita !\nJika terdapat nama perusahaan "Mandiri", maka tambahkan kata "Bank" di awal !\nSertakan hasil hanya dengan 1 baris dengan tanda koma sebagai pemisah !',
-                                'Output: PT Pertamina Geothermal Energy Tbk',
                                 f'input:\nBerita: {text}\nSebutkan nama perusahaan apa saja yang tercantum di dalam berita !\nJika terdapat nama perusahaan "Mandiri", maka tambahkan kata "Bank" di awal !\nSertakan hasil hanya dengan 1 baris dengan tanda koma sebagai pemisah !',
                                 'Output:',
+                                # f'input:\nBerita: {text}\nSebutkan nama perusahaan apa saja yang tercantum di dalam berita !\nJika terdapat nama perusahaan "Mandiri", maka tambahkan kata "Bank" di awal !\nSertakan hasil hanya dengan 1 baris dengan tanda koma sebagai pemisah !',
+                                # 'Output:',
                                 # "Sebutkan nama perusahaan apa saja yang tercantum di dalam berita !",
                                 # 'Jika terdapat nama perusahaan "Mandiri", maka tambahkan kata "Bank" di awal !',
                                 # 'Sertakan hasil hanya dengan 1 baris dengan tanda koma sebagai pemisah !'
