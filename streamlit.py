@@ -97,7 +97,7 @@ safety_settings = [{'category': 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
                     }
                 ]
 
-model = genai.GenerativeModel(model_name="gemini-pro",generation_config={'temperature':0},safety_settings=safety_settings)
+model = genai.GenerativeModel(model_name="gemini-pro",generation_config={'temperature':0.2},safety_settings=safety_settings)
 
 
 labels = [
@@ -135,6 +135,8 @@ if 'get_subject_progress' not in st.session_state:
     st.session_state['get_subject_progress'] = st.progress(0)
 # if 'get_stock_progress' not in st.session_state:
 #     st.session_state['get_stock_progress'] = st.progress(0)
+sample_text = """jakarta bmw m850i xdrive coupe first edition merupakan mobil langka di indonesia karena hanya ada 1 unit. berikut potret mobil yang dimiliki anak haji isam itu.bmw m850i xdrive coupe first edition hanya diproduksi sebanyak 400 unit di dunia. foto bmwwm menyematkan velg ringan berukurang 20 inchi yang mengusung warna jet black. foto bmwdi bagian tengah kokpit ada tulisan khusus first edition 1 400 . foto bmwkursinya dibalut kulit trim merino dengan kombinasi warna ivory white night blue. foto bmwedisi khusus ini menggendong mesin v8 dengan teknologi bmw twinpower turbo. mesinnya bisa menyemburkan tenaga 530 daya kuda pada rentang 5500 6000 rpm. foto bmwindonesia rupanya kebagian jatah mobil langka bmw m850i xdrive coupe first edition. untuk diketahui mobil ini hanya diproduksi sebanyak 400 unit dalam jurun waktu april juni 2019. dalam catatan bmw indonesia menyebut hanya ada satu unit mobil ini yang dijual di tanah air."""
+sample_text2= """wakil direktur utama pt bank mandiri persero tbk. bmri alexandra askandar mengungkapkan perseroan terus terbuka atas segala aksi korporasi termasuk untuk mengakuisisi bank digital.meski tak merinci lebih lanjut akan tetapi dia menyebut saat ini bank mandiri masih akan terus fokus dalam mengembangkan digitalisasi. tentu sangat terbuka atas semua corporate action tapi mungkin secara spesifik belum dapat saya share katanya dalam agenda cnbc economic outlook 2024 kamis .sejauh ini dia mengatakan dalam menghadapi pesatnya digitalisasi perbankan bank mandiri masih akan mengandalkan super app livin by mandiri. perkembangan super app perseroan itupun sangat signifikan terlihat dari sisi user registered saat kami launching pertama kali pengguna mobile banking bank mandiri di angka enam juta user lalu akhir tahun lalu menjadi 23 juta user registered livin ungkapnya.sebelumnya direktur teknologi informasi bank mandiri timothy utama mengatakan livin by mandiri pun sudah diposisikan di pasar sebagai bank digital dari bank mandiri. alhasil bank mandiri lebih memilih untuk fokus mengembangkan platform digitalnya itu. kami akan perkaya dengan fitur fitur untuk menjawab kebutuhan nasabah katanya. sementara itu livin by mandiri sendiri telah diunduh lebih dari 37 juta kali sejak diluncurkan pada oktober 2021. adapun sepanjang 2023 livin by mandiri mencatatkan 3 miliar transaksi.nilai transaksi livin by mandiri sepanjang 2023 telah menembus rp3.271 triliun naik 32 secara tahunan year on year yoy .bank mandiri juga memiliki platform digital untuk segmen wholesale bernama kopra by mandiri dan telah berhasil mengelola rp19.100 triliun transaksi. kami secara spesifik terus meningkatkan fungsi dan manfaat livin dan kopra by mandiri sebagai solusi yang dapat memenuhi segala macam kebutuhan nasabah baik secara finansial maupun non finansial ujar direktur utama bank mandiri darmawan i. sebagai informasi bank mandiri menjadi satu satunya bank dalam kategori kbmi iv alias bank jumbo yang tidak memiliki anak usaha di segmen bank digital.tercatat pt bank central asia tbk. bbca misalnya yang memiliki bca digital yang merupakan hasil transformasi dari pt bank royal indonesia. adapun bca mengakuisisi bank royal pada november 2019. lalu pt bank rakyat indonesia persero tbk. bbri yang menjadikan anak usahanya pt bank rakyat indonesia agroniaga tbk. menjadi bank digital dan berganti nama menjadi pt bank raya indonesia tbk. agro . terahir pt bank negara indonesia persero tbk. bbni telah mengakuisisi pt bank mayora dan mengubahnya menjadi bank digital bernama hibank."""
 
 uploaded_file = st.file_uploader("Upload Excel file")
 
@@ -154,11 +156,20 @@ if uploaded_file is not None:
         try:
             for i,row in df.iloc[st.session_state['state']:].iterrows():
                 st.session_state['get_subject_progress'].progress((st.session_state['state'] + 1) / len(df), text = f"{st.session_state['state']+1}/{len(df)}")
-                text = row['content_en']
-                
-                get_subjects = [f'News: {text}',"Mention the name of the corporate company mentioned in the news ?", 
-                                'You can pick it more than one !',
-                                'Please provide result using comma as the delimiter.']
+                text = row['cleaned']
+                get_subjects = [f'input:\nBerita: {sample_text}\nSebutkan nama perusahaan apa saja yang tercantum di dalam berita !\nJika terdapat nama perusahaan "Mandiri", maka tambahkan kata "Bank" di awal !\nSertakan hasil hanya dengan 1 baris dengan tanda koma sebagai pemisah !',
+                                'Output: BMW, BMW Indonesia',
+                                f'input:\nBerita: {sample_text2}\nSebutkan nama perusahaan apa saja yang tercantum di dalam berita !\nJika terdapat nama perusahaan "Mandiri", maka tambahkan kata "Bank" di awal !\nSertakan hasil hanya dengan 1 baris dengan tanda koma sebagai pemisah !',
+                                'Output: PT Bank Mandiri Persero Tbk, PT Bank Central Asia Tbk, PT Bank Rakyat Indonesia Persero Tbk, PT Bank Negara Indonesia Persero Tbk',
+                                f'input:\nBerita: {text}\nSebutkan nama perusahaan apa saja yang tercantum di dalam berita !\nJika terdapat nama perusahaan "Mandiri", maka tambahkan kata "Bank" di awal !\nSertakan hasil hanya dengan 1 baris dengan tanda koma sebagai pemisah !',
+                                'Output:'
+                                # "Sebutkan nama perusahaan apa saja yang tercantum di dalam berita !",
+                                # 'Jika terdapat nama perusahaan "Mandiri", maka tambahkan kata "Bank" di awal !',
+                                # 'Sertakan hasil hanya dengan 1 baris dengan tanda koma sebagai pemisah !'
+                                ]
+                # get_subjects = [f'News: {text}',"Mention the name of the corporate company mentioned in the news !", 
+                #                 'You can pick it more than one !',
+                #                 'Please provide result using comma as the delimiter.']
                 
                 get_commodity_desc = [f'News: {text}',
                                       f'Define news based on this list: {labels}, and please provide result using comma as the delimiter !',
@@ -170,15 +181,15 @@ if uploaded_file is not None:
                     subject  = model.generate_content(get_subjects).text.strip()
                     commodity  = model.generate_content(get_commodity_desc).text.strip()
                     
-                    get_stock_name = ['Your task is to classify company name to existing stock name based on Indonesia stock exchange !', 
-                                      f'Company name: {subject}.',
-                                      'Please generate result only like <stock name1>, <stock name2>, <...>.',
-                                      "If the company name not listed on Indonesia stock exchange, then don't write on the result."]
-                    stock_name = model.generate_content(get_stock_name).text.strip()
+                    # get_stock_name = ['Your task is to classify company name to existing stock name based on Indonesia stock exchange !', 
+                                    #   f'Company name: {subject}.',
+                                    #   'Please generate result only like <stock name1>, <stock name2>, <...>.',
+                                    #   "If the company name not listed on Indonesia stock exchange, then don't write on the result."]
+                    # stock_name = model.generate_content(get_stock_name).text.strip()
                 except:
                     continue
                 
-                st.session_state['stock_name_list'].append(stock_name)
+                # st.session_state['stock_name_list'].append(stock_name)
                 st.session_state['subject_list'].append(subject)
                 st.session_state['commodity_list'].append(commodity)
                 st.session_state['state']+=1
@@ -191,8 +202,8 @@ if uploaded_file is not None:
     # st.write(st.session_state['subject_list'])
     # st.write(st.session_state['commodity_list'])
     # df['abs_sum_en'] = st.session_state['summary_list'] 
-    df['stock_name'] = st.session_state['stock_name_list']
-    df['subject_name'] = st.session_state['subject_list']
+    # df['stock_name'] = st.session_state['stock_name_list']
+    df['SUBJECT'] = st.session_state['subject_list']
     df['COMMODITY_DESC'] = st.session_state['commodity_list']
     
     
