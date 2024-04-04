@@ -123,8 +123,8 @@ labels = [
     'INFORMATION MEDIA', 'BUSINESS SERVICES'
 ]
 
-if 'stock_name_list' not in st.session_state:
-    st.session_state['stock_name_list'] = []
+if 'summary_list' not in st.session_state:
+    st.session_state['summary_list'] = []
 if 'subject_list' not in st.session_state:
     st.session_state['subject_list'] = []
 if 'commodity_list' not in st.session_state:
@@ -158,6 +158,7 @@ if uploaded_file is not None:
             for i,row in df.iloc[st.session_state['state']:].iterrows():
                 st.session_state['get_subject_progress'].progress((st.session_state['state'] + 1) / len(df), text = f"{st.session_state['state']+1}/{len(df)}")
                 text = row['cleaned']
+                get_summarized = ['Summarize given news into 1 paragraph and 3 sentences !',f'News: {text}']
                 get_subjects = [f'input:\nBerita: {sample_text}\nSebutkan nama perusahaan apa saja yang tercantum di dalam berita !\nJika terdapat nama perusahaan "Mandiri", maka tambahkan kata "Bank" di awal !\nSertakan hasil hanya dengan 1 baris dengan tanda koma sebagai pemisah !',
                                 'Output: BMW, BMW Indonesia',
                                 f'input:\nBerita: {sample_text2}\nSebutkan nama perusahaan apa saja yang tercantum di dalam berita !\nJika terdapat nama perusahaan "Mandiri", maka tambahkan kata "Bank" di awal !\nSertakan hasil hanya dengan 1 baris dengan tanda koma sebagai pemisah !',
@@ -183,7 +184,7 @@ if uploaded_file is not None:
                 try:
                     subject  = model.generate_content(get_subjects).text.strip()
                     commodity  = model.generate_content(get_commodity_desc).text.strip()
-                    
+                    summarize =  model.generate_content(get_summarized).text.strip()
                     # get_stock_name = ['Your task is to classify company name to existing stock name based on Indonesia stock exchange !', 
                                     #   f'Company name: {subject}.',
                                     #   'Please generate result only like <stock name1>, <stock name2>, <...>.',
@@ -192,7 +193,7 @@ if uploaded_file is not None:
                 except:
                     continue
                 
-                # st.session_state['stock_name_list'].append(stock_name)
+                st.session_state['summary_list'].append(summarize)
                 st.session_state['subject_list'].append(subject)
                 st.session_state['commodity_list'].append(commodity)
                 st.session_state['state']+=1
@@ -208,7 +209,7 @@ if uploaded_file is not None:
     # df['stock_name'] = st.session_state['stock_name_list']
     df['SUBJECT'] = st.session_state['subject_list']
     df['COMMODITY_DESC'] = st.session_state['commodity_list']
-    
+    df['abs_sum_en'] = st.session_state['summary_list']
     
     # df.fillna('-', inplace=True)
     # df['subject_name'] = [i.split(',') for i in df['subject_name']]
@@ -218,10 +219,21 @@ if uploaded_file is not None:
     # final_df['COMMODITY_DESC'] = final_df['COMMODITY_DESC'].apply(labelling)
     # final_df = final_df.explode(['subject_name']).reset_index(drop=True)
     # final_df = final_df.drop_duplicates()
+
+    final_df = df.copy()
+    final_df.drop('COMMODITY_DESC',axis=1,inplace=True)
+    final_df = final_df.explode('SUBJECT')
+    final_df['SUBJECT'] = [i.strip() for i in final_df['SUBJECT']]
+    # df = 
+    final_df.drop_duplicates(inplace=True)
+    final_df['COMMODITY_DESC'] = df['COMMODITY_DESC']
+    final_df = final_df.explode(['COMMODITY_DESC'])
+    final_df.drop_duplicates(inplace=True)
+
     st.write(df)
     # final_df
     file_name = f"{datetime.now().strftime('%Y%m%d')}_news.csv"
-    excel_file = df.to_csv().encode('utf-8')
+    excel_file = df.to_csv(index=False).encode('utf-8')
     # with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
     #     excel_file = final_df.to_excel(writer)
     
