@@ -4,86 +4,12 @@ import pandas as pd
 import os
 from datetime import datetime
 
-def labelling(label):
-    if label == 'AUTOMOTIVE AND TRANSPORTATION':
-        return 'OTOMOTIF DAN ALAT TRANSPORTASI'
-    elif label == 'BUILDING MATERIALS & OTHER CONSTRUCTION IRON':
-        return 'BAHAN BANGUNAN & BESI KONTRUKSI LAINNYA'
-    elif label == 'PHARMACEUTICALS AND HEALTH EQUIPMENT':
-        return 'FARMASI DAN ALAT KESEHATAN'
-    elif label == 'CHEMICALS AND PLASTICS':
-        return 'BAHAN KIMIA DAN PLASTIK'
-    elif label == 'CONSUMER FINANCE':
-        return 'PEMBIAYAAN KONSUMEN'
-    elif label == 'TRANSPORTATION AND LOGISTICS':
-        return 'TRANSPORTASI DAN LOGISTIK'
-    elif label == 'TELECOMMUNICATIONS':
-        return 'TELEKOMUNIKASI'
-    elif label == 'PLANTATION AND AGRICULTURE':
-        return 'PERKEBUNAN DAN PERTANIAN'
-    elif label == 'VEGETABLE / ANIMAL OILS':
-        return'MINYAK NABATI / HEWANI'
-    elif label == 'FOOD AND BEVERAGE':
-        return 'MAKANAN DAN MINUMAN'
-    elif (label == 'CONSUMER NEEDS') or (label == 'EQUIPMENT AND HOUSEHOLD NEEDS (NEEDS OUTSIDE OF CLOTHING)'):
-        return 'KEBUTUHAN KONSUMEN, PERLENGKAPAN DAN KEBUTUHAN RT (KEBUTUHAN DI LUAR SANDANG)'
-    elif label == 'PACKAGING':
-        return 'PACKAGING'
-    elif (label == 'MACHINERY') or (label == 'HEAVY EQUIPMENT & OTHER INDUSTRIAL EQUIPMENT'):
-        return 'PERMESINAN, ALAT BERAT & PERALATAN INDUSTRI LAINNYA'
-    elif label == 'PROPERTY AND CONSTRUCTION':
-        return 'PROPERTI DAN KONSTRUKSI'
-    elif label == 'FINANCIAL SERVICES':
-        return 'JASA KEUANGAN'
-    elif label == 'WOOD PRODUCTS AND FORESTRY':
-        return 'HASIL KAYU DAN KEHUTANAN'
-    elif label == 'TEXTILES & TEXTILE PRODUCTS':
-        return 'TEKSTIL & PRODUK TEKSTIL'
-    elif label == 'BASIC METALS INDUSTRY & SIMILAR':
-        return 'INDUSTRI LOGAM DASAR & SEJENISNYA'
-    elif label == 'ENERGY GENERATION':
-        return 'PEMBANGKIT ENERGI DAN TENAGA LISTRIK'
-    elif label == 'ELECTRICITY':
-        return 'PEMBANGKIT ENERGI DAN TENAGA LISTRIK'
-    elif label == 'ELECTRONIC EQUIPMENT AND ELECTRICAL TOOLS':
-        return 'PERALATAN ELEKTRONIK DAN ALAT-ALAT LISTRIK'
-    elif label == 'COAL':
-        return 'BATUBARA'
-    elif label == 'OIL AND GAS MINING':
-        return 'PERTAMBANGAN MIGAS'
-    elif label == 'CIGARETTES AND TOBACCO':
-        return 'ROKOK DAN TEMBAKAU'
-    elif (label == 'DISTRIBUTION') or (label == 'RETAILERS AND DEPARTMENT STORES'):
-        return 'DISTRIBUSI, RETAILER DAN TOSERBA'
-    elif label == 'TOURISM':
-        return 'PARIWISATA'
-    elif label == 'TRANSPORT INFRASTRUCTURE FACILITIES':
-        return 'INFRASTRUKTUR SARANA ANGKUTAN'
-    elif label == 'STAPLE FOODS':
-        return 'MAKANAN POKOK'
-    elif (label == 'LIVESTOCK') or (label == 'FISHERIES AND PRODUCTION FACILITIES'):
-        return 'PETERNAKAN, PERIKANAN DAN SARANA PRODUKSI'
-    elif label == 'INFORMATION TECHNOLOGY':
-        return 'TEKNOLOGI INFORMASI'
-    elif label == 'NON-OIL AND GAS MINING':
-        return 'PERTAMBANGAN NON MIGAS'
-    elif label == 'OFFICE EQUIPMENT AND STATIONERY':
-        return 'PERALATAN KANTOR DAN STATIONERY'
-    elif label == 'RESTAURANTS':
-        return 'RESTORAN'
-    elif label == 'PUBLIC FACILITIES':
-        return 'PRASARANA UMUM'
-    elif label == 'INFORMATION MEDIA':
-        return 'MEDIA INFORMASI'
-    elif label == 'BUSINESS SERVICES':
-        return 'JASA USAHA'
-    
-genai.configure(api_key='AIzaSyBM3MFzxbo_6ptt_o3ss8YchNtjgI7DSRQ')
+genai.configure(api_key='AIzaSyCMd35BDT5kgzmb4cVstwCVP4boCMB19jA')
 st.write("Hello world")
 
 safety_settings = [{'category': 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
                     'threshold': 'BLOCK_NONE'},
-                   {
+                    {
                     'category': 'HARM_CATEGORY_HATE_SPEECH',
                     'threshold': 'BLOCK_NONE'
                     },
@@ -98,7 +24,6 @@ safety_settings = [{'category': 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
                 ]
 
 model = genai.GenerativeModel(model_name="gemini-pro",generation_config={'temperature':0.2},safety_settings=safety_settings)
-
 
 labels = [
     'AUTOMOTIVE AND TRANSPORTATION',
@@ -140,7 +65,6 @@ sample_text2= """wakil direktur utama pt bank mandiri persero tbk. bmri alexandr
 sample_text3 = """pt pertamina geothermal energy tbk pgeo mengumumkan kinerja perseroan tahun buku 2023 yang berakhir pada 31 desember 2023.pada periode tersebut pertamina geothermal energy berhasil membukukan pertumbuhan positif baik dari sisi pendapatan maupun laba. melansir laporan keuangan perseroan dalam keterbukaan informasi bursa efek indonesia bei jumat perseroan membukukan pendapatan usd 406 juta atau sekitar rp 6 triliun kurs rp 15708 per usd .pendapatan ini naik 5 persen dibandingkan pendapatan pada 2022 yang tercatat sebesar usd 386 juta. bersamaan dengan kenaikan pendapatan beban pokok pendapatan dan beban langsung lainnya ikut naik menjadi usd 179 juta dari usd 173 juta pada 2022. meski begitu laba bruto perseroan pada 2023 masih tercatat lebih tinggi yakni usd 227 juta dibanding tahun sebelumnya usd 213 juta.sepanjang 2023 perseroan membukukan beban umum dan administrasi sebesar usd 6 juta pendapatan keuangan usd 22 juta dan pendapatan lain lain usd 21 juta. pada periode ini perseroan juga membukukan beban keuangan usd 24 juta.setelah dikurangi beban pajak penghasilan perseroan membukukan laba tahun berjalan yang dapat diatribusikan kepada pemilik entitas induk sebesar usd 164 juta atau sekitar rp 3 triliun. laba ini naik 28 persen dibandingkan laba 2022 yang tercatat sebesar usd 127 juta.dari sisi aset perseroan sampai dengan 31 desember 2023 naik menjadi usd 3 miliar dari usd 2 miliar pada akhir 2022. liabilitas pada 2023 turun menjadi usd 993 juta dari usd 1 miliar pada 2022. sementara ekuitas pada 2023 naik menjadi usd 2 miliar dari usd 1 miliar pada 2022.pada penutupan perdagangan sesi pertama jumat harga saham pgeo naik 1 persen ke posisi rp 1220 per saham. saham pgeo dibuka stagnan rp 1210 per saham. saham pgeo berada di level tertinggi rp 1230 dan terendah rp 1205 per saham. total frekuensi perdagangan 1650 kali dengan volume perdagangan 957968 saham. nilai transaksi rp 111 miliar. sebelumnya diberitakan pt pertamina geothermal energy tbk pgeo atau disebut pge mengumumkan peluncuran program management and employee stock option program mesop tahap i.perkiraan jumlah hak opsi yang akan dilaksanakan dalam program mesop tahap i ini mencapai 252159200 saham dengan nilai nominal rp 648 per saham. direktur utama pt pertamina geothermal energy tbk julfi hadi mengatakan untuk menjadikan pge sebagai world class pany diperlukan usaha bersama dari semua pihak termasuk di dalamnya karyawan.setelah ipo pada 2023 pertamina geothermal energy telah mengalokasikan 2 dari modal ditempatkan dan disetor penuh setelah penawaran umum perdana saham atau sebanyak banyaknya 630398000 saham untuk program opsi pembelian saham kepada manajemen dan karyawan perseroan. program mesop menjadi salah satu bentuk komitmen perseroan untuk meningkatkan rasa memiliki dari karyawan terhadap perusahaan sehingga bersama kita dapat mencapai kinerja perseroan terbaik secara berkelanjutan kata julfi seperti dikutip dari keterangan resmi ditulis rabu .julfi menjelaskan program mesop tahap i ini sebenarnya sudah sejalan dengan kebijakan perseroan. selain itu program ini juga sudah tercantum pada peraturan ojk atau otoritas jasa keuangan no.3 thn. 2014 di mana disebutkan jika program kepemilikan saham bagi karyawan merupakan usaha agar pegawai atau karyawan dapat mempunyai aset dari perusahaan. harapan kami program mesop tahap i ini akan membuat pge menjadi semakin terdepan dalam mengelola potensi energi terbarukan di indonesia tutur dia. sementara itu direktur keuangan pt pertamina geothermal energy tbk yurizki rio berharap hadirnya program ini akan dapat meningkatkan loyalitas dan kinerja karyawan dan manajemen serta memperkuat struktur permodalan. kami harap program mesop tahap i ini dapat meningkatkan motivasi dan komitmen karyawan agar mampu memberikan performa yang baik dan berdampak bagus pada operasional serta perkembangan perseroan kata yurizki.sejauh ini inisiatif perseroan dalam memperkuat permodalan didapat dari penawaran saham perdana pada rp 875 dengan nilai terkumpul sebesar rp 9056250000.000. selain itu pge menerbitkan obligasi berwawasan hijau green bond di pasar global. green bond pge berhasil membukukan usd 400 juta pada 27 april 2023. green bond pge tersebut menjadi bond premium di secondary market yang tercatat pada singapore exchange securities trading limited sgx st atau bursa efek di singapura.sebelumnya diberitakan pt pertamina geothermal energy tbk pgeo menandatangani non disclosure agreement nda dengan geothermal pany gdc untuk mempelajari lebih lanjut kemungkinan kerja sama dalam pengembangan potensi panas bumi di kenya dan indonesia.hal tersebut dilakukan dalam rangka menindaklanjuti memorandum of understanding mou g2g yang sudah disepakati oleh indonesia dan kenya pada kunjungan ke kenya agustus 2023.direktur utama pertamina geothermal energy julfi hadi menuturkan kerja sama dengan kenya ini sebagai langkah awal pge untuk menjadi world class green pany. saat berkunjung ke kenya pge menandatangani kesepakatan dengan africa geothermal international limited agil untuk mengembangkan konsesi longonot di kenya yang memiliki potensi pengembangan sampai dengan 500 mw di mana 140 mw siap untuk di eksploitasi ujar dia dalam keterbukaan informasi dikutip jumat .terkait progres kerja sama dengan agil julfi mengatakan saat ini kedua belah pihak sedang melakukan sharing data hingga tiga bulan ke depan. tentunya banyak hal bernilai positif bagi kedua negara dalam mengembangkan energi panas bumi kata dia."""
 
 uploaded_file = st.file_uploader("Upload Excel file")
-
     
 if uploaded_file is not None:
     # Read the CSV file
@@ -207,9 +131,10 @@ if uploaded_file is not None:
     # st.write(st.session_state['commodity_list'])
     # df['abs_sum_en'] = st.session_state['summary_list'] 
     # df['stock_name'] = st.session_state['stock_name_list']
+    df['abs_sum_en'] = st.session_state['summary_list']
     df['SUBJECT'] = st.session_state['subject_list']
     df['COMMODITY_DESC'] = st.session_state['commodity_list']
-    df['abs_sum_en'] = st.session_state['summary_list']
+    
     
     # df.fillna('-', inplace=True)
     # df['subject_name'] = [i.split(',') for i in df['subject_name']]
