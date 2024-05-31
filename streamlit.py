@@ -38,7 +38,6 @@ uploaded_file = st.file_uploader("Upload Excel file")
     
 if uploaded_file is not None:
     # Read the CSV file
-    df = pd.DataFrame()
     # try:
     df = pd.read_excel(uploaded_file)
 
@@ -46,23 +45,20 @@ if uploaded_file is not None:
     st.write(df)
     
     while(1):
-        try:
-            for i,row in df.iloc[st.session_state['state']:].iterrows():
-                st.session_state['get_subject_progress'].progress((st.session_state['state'] + 1) / len(df), text = f"{st.session_state['state']+1}/{len(df)}")
-                text = row['cleaned']
-                get_summarized = ['Summarize given news into 1 paragraph and 3 sentences !',f'News: {text}']
-                try:
-                    summarize =  model.generate_content(get_summarized).text.strip()
-                except:
-                    continue
-                
-                st.session_state['summary_list'].append(summarize)
-                st.session_state['state']+=1
+        for i,row in df.iloc[st.session_state['state']:].iterrows():
+            st.session_state['get_subject_progress'].progress((st.session_state['state'] + 1) / len(df), text = f"{st.session_state['state']+1}/{len(df)}")
+            text = row['cleaned']
+            get_summarized = ['Summarize given news into 1 paragraph and 3 sentences !',f'News: {text}']
+            try:
+                summarize =  model.generate_content(get_summarized).text.strip()
+            except:
+                continue
+            
+            st.session_state['summary_list'].append(summarize)
+            st.session_state['state']+=1
 
-            if len(st.session_state['summary_list']) == len(df):
-                break
-        except:
-            continue
+        if len(st.session_state['summary_list']) == len(df):
+            break
     df['abs_sum_en'] = st.session_state['summary_list']
   
     final_df = df.copy()
