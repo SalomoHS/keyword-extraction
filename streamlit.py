@@ -46,7 +46,7 @@ if uploaded_file is not None:
     while(1):
         for i,row in df.iloc[st.session_state['state']:].iterrows():
             print(i)
-          text = row['cleaned']
+            text = row['cleaned']
             get_summarized = ['Summarize given news into 1 paragraph and 3 sentences !',f'News: {text}']
             try:
                 summarize =  model.generate_content(get_summarized).text.strip()
