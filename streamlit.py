@@ -4,7 +4,7 @@ import pandas as pd
 import os
 from datetime import datetime
 
-genai.configure(api_key='AIzaSyDXnyQQ8LDSjDlJZvyp_n7nLNy7JWPMb_0')
+genai.configure(api_key='AIzaSyC-eK9vZWB-DmTiIUcKlgnUUJ0RAhGTp8Q')
 st.write("Hello world")
 
 safety_settings = [{'category': 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
