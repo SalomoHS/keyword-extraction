@@ -40,7 +40,7 @@ if uploaded_file is not None:
     df['summarized'] = st.session_state['summary_list']
     
     final_df = df.copy()
-    file_name = f"{datetime.now().strftime('%Y%m%d')}_news.csv"
+    file_name = f"{datetime.now().strftime('%Y%m%d')}_news_summarized.csv"
     excel_file = df.to_csv(index=False).encode('utf-8')
     st.download_button(
         label="Download data",
