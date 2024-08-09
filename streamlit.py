@@ -28,7 +28,6 @@ if uploaded_file is not None:
                 { "role": "user", "content": f"Summarize following news into 3 sentences: {row['translated']}"}
             ]
             output = run("@cf/mistral/mistral-7b-instruct-v0.2-lora", inputs)
-            output = json.loads(output)
             st.session_state['summary_list'].append(output["result"]["response"])
             
             st.session_state['state']+=1
