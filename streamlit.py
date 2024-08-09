@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import requests
+import json
 
 def run(model, inputs):
         input = { "messages": inputs , 'raw':'true'}
@@ -28,6 +29,7 @@ if uploaded_file is not None:
             ]
             try:
                 output = run("@cf/mistral/mistral-7b-instruct-v0.2-lora", inputs)
+                output = json.loads(output)
                 st.session_state['summary_list'].append(output)
             except:
                 continue
