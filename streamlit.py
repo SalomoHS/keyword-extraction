@@ -30,7 +30,7 @@ if uploaded_file is not None:
             try:
                 output = run("@cf/mistral/mistral-7b-instruct-v0.2-lora", inputs)
                 output = json.loads(output)
-                st.session_state['summary_list'].append(output)
+                st.session_state['summary_list'].append(output["result"]["response"])
             except:
                 continue
             
