@@ -27,12 +27,9 @@ if uploaded_file is not None:
                 { "role": "system", "content": "You are an assistant that helps to summarize news" },
                 { "role": "user", "content": f"Summarize following news into 3 sentences: {row['translated']}"}
             ]
-            try:
-                output = run("@cf/mistral/mistral-7b-instruct-v0.2-lora", inputs)
-                output = json.loads(output)
-                st.session_state['summary_list'].append(output["result"]["response"])
-            except:
-                continue
+            output = run("@cf/mistral/mistral-7b-instruct-v0.2-lora", inputs)
+            output = json.loads(output)
+            st.session_state['summary_list'].append(output["result"]["response"])
             
             st.session_state['state']+=1
 
